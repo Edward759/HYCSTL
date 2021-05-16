@@ -4,93 +4,100 @@
 #include "algo.h"
 using namespace std;
 
+void print(mystl::list<int>& ilist, string name = "")
+{
+	mystl::list<int>::iterator iter;
+	
+	if(name != "")
+		cout << name << ":" << endl;
+	for (iter = ilist.begin(); iter != ilist.end(); ++iter)
+		cout << *iter << ' ';
+	cout << endl;
+	cout << endl;
+}
+
+mystl::list<int> fill(int n = 0)
+{
+	mystl::list<int> l;
+
+	for(int i = 0; i < 5; i++)
+	{
+		int elem = i + 10 * n;
+		l.push_back(elem);
+	}
+	cout << "new list:"<<endl;
+	print(l);
+	return l;
+}
+
 void test_list()
 {
 	mystl::list<int> ilist;
 	cout << "size=" << ilist.size() << endl;
 
-	ilist.push_back(0);
-	ilist.push_back(1);
-	ilist.push_back(2);
-	ilist.push_back(3);
-	ilist.push_back(4);
+	ilist = fill();
 	cout << "size=" << ilist.size() << endl;
+	print(ilist);
 
 	mystl::list<int>::iterator iter;
-	for (iter = ilist.begin(); iter != ilist.end(); ++iter)
-		cout << *iter << ' ';
-	cout << endl;
-
 	iter = mystl::find(ilist.begin(), ilist.end(), 3);
 	if (iter != nullptr)
 		ilist.insert(iter, 99);
 	cout << "size=" << ilist.size() << endl;
 	cout << *iter << endl;
 
-	for (iter = ilist.begin(); iter != ilist.end(); ++iter)
-		cout << *iter << ' ';
-	cout << endl;
+	print(ilist);
 
 	iter = mystl::find(ilist.begin(), ilist.end(), 1);
 	if (iter != nullptr)
 		cout << *(ilist.erase(iter)) << endl;
 
-	for (iter = ilist.begin(); iter != ilist.end(); ++iter)
-		cout << *iter << ' ';
-	cout << endl;
+	print(ilist);
 
 	iter = ilist.begin() + 1;
 	cout << *iter << endl;
 	iter = ilist.end() - 2;
 	cout << *iter << endl;
 
-	cout << "Transeferring in the same list." << endl;
-	cout << "Before transfer:" << endl;
-	for (iter = ilist.begin(); iter != ilist.end(); ++iter)
-		cout << *iter << ' ';
-	cout << endl;
-	cout << "After transfer:" << endl;
-	ilist.transfer(ilist.begin(), ilist.begin() + 1, ilist.begin() + 3);
-	for (iter = ilist.begin(); iter != ilist.end(); ++iter)
-		cout << *iter << ' ';
-	cout << endl;
-	cout << endl;
-
-	cout << "Transeferring in different lists." << endl;
 	mystl::list<int> ilist1, ilist2;
 
-	ilist1.push_back(0);
-	ilist1.push_back(1);
-	ilist1.push_back(2);
-	ilist1.push_back(3);
-	ilist1.push_back(4);
+	ilist1 = fill();
+	ilist2 = fill(1);
 
-	ilist2.push_back(10);
-	ilist2.push_back(11);
-	ilist2.push_back(12);
-	ilist2.push_back(13);
-	ilist2.push_back(14);
+	cout << "ilist1:"<<endl;
+	print(ilist1);
+	cout << "ilist2:"<<endl;
+	print(ilist2);
 
-	cout << "list1 before transfer:" << endl;
-	for (iter = ilist1.begin(); iter != ilist1.end(); ++iter)
-		cout << *iter << ' ';
-	cout << endl;
-	cout << "list2 before transfer:" << endl;
-	for (iter = ilist2.begin(); iter != ilist2.end(); ++iter)
-		cout << *iter << ' ';
-	cout << endl;
+	cout << "ilist1.splice(ilist1.begin() + 1, ilist2):" << endl;
+	ilist1.splice(ilist1.begin() + 1, ilist2);
+	print(ilist1);
 
-	cout << "Exec ilist1.transfer(ilist1.begin(), ilist2.begin() + 1, ilist2.begin() + 3)" << endl;
-	ilist1.transfer(ilist1.begin(), ilist2.begin() + 1, ilist2.begin() + 3);
+	ilist1 = fill();
+	ilist2 = fill(1);
 
-	cout << "list1 after transfer:" << endl;
-	for (iter = ilist1.begin(); iter != ilist1.end(); ++iter)
-		cout << *iter << ' ';
-	cout << endl;
-	cout << "list2 after transfer:" << endl;
-	for (iter = ilist2.begin(); iter != ilist2.end(); ++iter)
-		cout << *iter << ' ';
-	cout << endl;
-	cout << endl;
+	cout << "ilist1.splice(iter1, ilist1, iter2)" <<endl;
+	auto iter1 = ilist1.begin() + 1, iter2 = ilist2.begin();
+	ilist1.splice(iter1, iter2);
+	print(ilist1, "ilist1");
 
+	ilist1 = fill();
+	ilist2 = fill(1);
+	cout << "ilist1.splice(ilist1.begin() + 1, ilist1, ilist2.begin(), ilist2.end())" <<endl;
+	ilist1.splice(ilist1.begin() + 1, ilist2.begin(), ilist2.end());
+	print(ilist1, "ilist1");
+
+	ilist1 = fill();
+	ilist2 = fill(1);
+	ilist1.push_back(27);
+	cout << "exec ilist1.merge(ilist2)" <<endl;
+	ilist1.merge(ilist2);
+	print(ilist1, "ilist1");
+
+	ilist.clear();
+	ilist = fill();
+	cout << "exec ilist.reverse()" <<endl;
+	ilist.reverse();
+
+	print(ilist, "ilist");
 }

@@ -197,22 +197,62 @@ namespace mystl
 			}
 		}
 
-		void transfer(iterator position, iterator first, iterator last)
+		
+
+		void splice(iterator position, list& x)
 		{
-			if (position != last)
+			if(!x.empty())
 			{
-				link_type firstPre = link_type(first.node->prev);
-				link_type lastPre = link_type(last.node->prev);
-				link_type positionPre = link_type(position.node->prev);
+				transfer(position, x.begin(), x.end());
+			}
+		}
 
-				firstPre->next = last.node;
-				lastPre->prev = firstPre;
-				
-				first.node->prev = positionPre;
-				positionPre->next = first.node;
+		void splice(iterator position, iterator i)
+		{
+			iterator j = i;
+			++j;
+			if(position == i || position == j)
+				return;
+			transfer(position, i, j);
+		}
 
-				position.node->prev = lastPre;
-				lastPre->next = position.node;
+		void splice(iterator position, iterator first, iterator last)
+		{
+			if(first != last)
+				transfer(position, first, last);
+		}
+
+		void merge(list& x)
+		{
+			iterator first1 = begin();
+			iterator last1 = end();
+			iterator first2 = x.begin();
+			iterator last2 = x.end();
+
+			while (first1 != last1 && first2 != last2)
+			{
+				if(*first2 < *first1)
+					splice(first1, first2++);
+				else
+					++first1;
+			}
+			if(first2 != last2)
+				transfer(first1, first2, last2);
+		}
+
+		void reverse()
+		{
+			if(size() < 2)
+				return;
+			
+			iterator first = begin();
+			++first;
+
+			while (first != end())
+			{
+				iterator old = first;
+				++first;
+				transfer(begin(), old, first);
 			}
 		}
 
@@ -237,6 +277,20 @@ namespace mystl
 			node = get_node();
 			node->next = node;
 			node->prev = node;
+		}
+
+		void transfer(iterator position, iterator first, iterator last)
+		{
+			if (position != last)
+			{
+				(*(link_type((*last.node).prev))).next = position.node;
+				(*(link_type((*first.node).prev))).next = last.node;
+				(*(link_type((*position.node).prev))).next = first.node;
+				link_type tmp = link_type((*position.node).prev);
+				(*position.node).prev = (*last.node).prev;
+				(*last.node).prev = (*first.node).prev;
+				(*first.node).prev = tmp;
+			}
 		}
 	};
 }

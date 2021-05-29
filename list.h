@@ -2,6 +2,7 @@
 #include "iterator.h"
 #include "alloc.h"
 #include "construct.h"
+#include "algobase.h"
 
 namespace mystl
 {
@@ -197,8 +198,6 @@ namespace mystl
 			}
 		}
 
-		
-
 		void splice(iterator position, list& x)
 		{
 			if(!x.empty())
@@ -207,7 +206,7 @@ namespace mystl
 			}
 		}
 
-		void splice(iterator position, iterator i)
+		void splice(iterator position, list&, iterator i)
 		{
 			iterator j = i;
 			++j;
@@ -216,7 +215,7 @@ namespace mystl
 			transfer(position, i, j);
 		}
 
-		void splice(iterator position, iterator first, iterator last)
+		void splice(iterator position, list&, iterator first, iterator last)
 		{
 			if(first != last)
 				transfer(position, first, last);
@@ -232,7 +231,11 @@ namespace mystl
 			while (first1 != last1 && first2 != last2)
 			{
 				if(*first2 < *first1)
-					splice(first1, first2++);
+				{
+					iterator next = first2;
+					transfer(first1, first2, ++next);
+					first2 = next;
+				}
 				else
 					++first1;
 			}
@@ -254,6 +257,37 @@ namespace mystl
 				++first;
 				transfer(begin(), old, first);
 			}
+		}
+
+		void sort()
+		{
+			if(node->next == node || link_type(node->next)->next == node)
+				return;
+
+			list carry;
+			list counter[64];
+
+			int fill = 0;
+			while(!empty())
+			{
+				carry.splice(carry.begin(), *this, begin());
+				int i = 0;
+				while (i < fill && !counter[i].empty())
+				{
+					counter[i].merge(carry);
+					carry.swap(counter[i++]);
+				}
+				carry.swap(counter[i]);
+				if(i == fill) ++fill;
+			}
+			for(int i = 1; i < fill; ++i)
+				counter[i].merge(counter[i - 1]);
+			swap(counter[fill - 1]);
+		}
+
+		void swap(list& x)
+		{
+			mystl::swap(node, x.node);
 		}
 
 	protected:

@@ -78,13 +78,13 @@ void test_list()
 
 	cout << "ilist1.splice(iter1, ilist1, iter2)" <<endl;
 	auto iter1 = ilist1.begin() + 1, iter2 = ilist2.begin();
-	ilist1.splice(iter1, iter2);
+	ilist1.splice(iter1, ilist1, iter2);
 	print(ilist1, "ilist1");
 
 	ilist1 = fill();
 	ilist2 = fill(1);
 	cout << "ilist1.splice(ilist1.begin() + 1, ilist1, ilist2.begin(), ilist2.end())" <<endl;
-	ilist1.splice(ilist1.begin() + 1, ilist2.begin(), ilist2.end());
+	ilist1.splice(ilist1.begin() + 1, ilist1, ilist2.begin(), ilist2.end());
 	print(ilist1, "ilist1");
 
 	ilist1 = fill();
@@ -99,5 +99,12 @@ void test_list()
 	cout << "exec ilist.reverse()" <<endl;
 	ilist.reverse();
 
+	print(ilist, "ilist");
+
+	ilist.push_back(9);
+	ilist.push_back(7);
+	ilist.push_back(5);
+	print(ilist, "ilist");
+	ilist.sort();
 	print(ilist, "ilist");
 }

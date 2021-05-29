@@ -17,9 +17,13 @@ namespace mystl
 	}
 
 	template <class ForwardIterator>
-	inline void destroy(ForwardIterator first, ForwardIterator last)
+	inline void __destroy_aux(ForwardIterator, ForwardIterator, __true_type) {}
+
+	template <class ForwardIterator>
+	inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __false_type)
 	{
-		_destroy(first, last, value_type(first));
+		for (; first < last; ++first)
+			destroy(&*first);
 	}
 
 	template <class ForwardIterator, class T>
@@ -30,13 +34,9 @@ namespace mystl
 	}
 
 	template <class ForwardIterator>
-	inline void __destroy_aux(ForwardIterator, ForwardIterator, __true_type) {}
-
-	template <class ForwardIterator>
-	inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __false_type)
+	inline void destroy(ForwardIterator first, ForwardIterator last)
 	{
-		for (; first < last; ++first)
-			destroy(&*first);
+		_destroy(first, last, value_type(first));
 	}
 
 	inline void destroy(char*, char*) {}

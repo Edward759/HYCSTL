@@ -18,6 +18,15 @@ namespace mystl
 			*first = value;
 	}
 
+	template <class InputIterator, class OutputIterator>
+	struct __copy_dispatch
+	{
+		OutputIterator operator() (InputIterator first, InputIterator last, OutputIterator result)
+		{
+			return __copy(first, last, result, iterator_category(first));
+		}
+	};
+
 	template <class InputIterator,class OutputIterator>
 	inline OutputIterator copy(InputIterator first, InputIterator last, OutputIterator result)
 	{
@@ -36,14 +45,7 @@ namespace mystl
 		return result + (last - first);
 	}
 
-	template <class InputIterator, class OutputIterator>
-	struct __copy_dispatch
-	{
-		OutputIterator operator() (InputIterator first, InputIterator last, OutputIterator result)
-		{
-			return __copy(first, last, result, iterator_category(first));
-		}
-	};
+	
 
 	template <class InputIterator, class OutputIterator>
 	inline OutputIterator __copy(InputIterator first, InputIterator last, OutputIterator result, input_iterator_tag)
@@ -103,11 +105,13 @@ namespace mystl
 	}
 
 	template <class BidirectionalIterator1, class BidirectionalIterator2>
-	inline BidirectionalIterator2 copy_backward(BidirectionalIterator1 first, 
-												BidirectionalIterator1 last, 
-												BidirectionalIterator2 result)
+	inline BidirectionalIterator2 __copy_backward(BidirectionalIterator1 first,
+		BidirectionalIterator1 last,
+		BidirectionalIterator2 result)
 	{
-		return __copy_backward_dispatch<BidirectionalIterator1, BidirectionalIterator2>()(first, last, result);
+		for (; first != last; --result, --last)
+			*result = *last;
+		return result;
 	}
 
 	template <class BidirectionalIterator1, class BidirectionalIterator2>
@@ -121,15 +125,18 @@ namespace mystl
 		}
 	};
 
-	template <class BidirectionalIterator1, class BidirectionalIterator2, class Distance>
-	inline BidirectionalIterator2 __copy_backward(BidirectionalIterator1 first,
-		BidirectionalIterator1 last,
-		BidirectionalIterator2 result)
+	template <class BidirectionalIterator1, class BidirectionalIterator2>
+	inline BidirectionalIterator2 copy_backward(BidirectionalIterator1 first, 
+												BidirectionalIterator1 last, 
+												BidirectionalIterator2 result)
 	{
-		for (; first != last; --result, --last)
-			*result = *last;
-		return result;
+		return __copy_backward_dispatch<BidirectionalIterator1, 
+										BidirectionalIterator2>()(first, last, result);
 	}
+
+	
+
+	
 
 	template <class T>
 	struct __copy_backward_dispatch<T*, T*>
@@ -175,5 +182,13 @@ namespace mystl
 	inline const T& max(const T& a, const T& b, Compare comp)
 	{
 		return comp(a, b) ? b : a;
+	}
+
+	template <class T>
+	inline void swap(T& a, T& b) 
+	{
+		T tmp = a;
+		a = b;
+		b = tmp;
 	}
 }

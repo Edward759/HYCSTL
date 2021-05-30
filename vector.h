@@ -13,7 +13,9 @@ namespace mystl
 		typedef T				value_type;
 		typedef value_type*		pointer;
 		typedef value_type*		iterator;
+		typedef const value_type* const_iterator;
 		typedef value_type&		reference;
+		typedef const value_type& const_reference;
 		typedef size_t			size_type;
 		typedef ptrdiff_t		difference_type;
 
@@ -39,8 +41,10 @@ namespace mystl
 
 	public:
 		iterator begin() { return start; }
+		const_iterator begin() const { return start; }
 		iterator end() { return finish; }
-		size_type size() { return size_type(end() - begin()); }
+		const_iterator end() const { return finish; }
+		size_type size() const { return size_type(end() - begin()); }
 		size_type capacity()const
 		{
 			return size_type(end_of_storage - start);
@@ -53,6 +57,14 @@ namespace mystl
 		vector(int n, const T& value) { fill_initialize(n, value); }
 		vector(long n, const T& value) { fill_initialize(n, value); }
 		explicit vector(size_type n) { fill_initialize(n, T()); }
+		vector(const_iterator first, const_iterator last)
+		{
+			size_type n = 0;
+			distance(first, last, n);
+			start = allocate_and_copy(n, first, last);
+			finish = start + n;
+			end_of_storage = finish;
+		}
 
 		~vector()
 		{
@@ -60,6 +72,7 @@ namespace mystl
 			deallocate();
 		}
 		reference front() { return *begin(); }
+  const_reference front() const { return *begin(); }
 		reference back() { return *(end() - 1); }
 		void push_back(const T& x)
 		{
@@ -107,11 +120,26 @@ namespace mystl
 		void insert(iterator position, size_type n, const T& x);
 
 	protected:
-		iterator	 allocate_and_fill(size_type n, const T& x)
+		iterator allocate_and_fill(size_type n, const T& x)
 		{
 			iterator result = data_allocator::allocate(n);
 			uninitialized_fill_n(result, n, x);
 			return result;
+		}
+
+		iterator allocate_and_copy(size_type n, const_iterator first, const_iterator last)
+		{
+			iterator result = data_allocator::allocate(n);
+			try
+			{
+				uninitialized_copy(first, last, result);
+				return result;
+			}
+			catch(const std::exception& e)
+			{
+				data_allocator::deallocate(result, n);
+			}
+			return nullptr;
 		}
 	};
 

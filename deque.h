@@ -137,6 +137,7 @@ namespace mystl
 		typedef T value_type;
 		typedef value_type* pointer;
 		typedef value_type& reference;
+		typedef const value_type& const_reference;
 		typedef size_t size_type;
 		typedef ptrdiff_t difference_type;
 
@@ -161,6 +162,12 @@ namespace mystl
 		size_type map_size;
 
 	public:
+		deque()
+		: start(), finish(), map(0), map_size(0)
+		{
+			create_map_and_nodes(0);
+		}
+
 		deque(int n, const value_type& value)
 		: start(), finish(), map(0), map_size(0)
 		{

@@ -92,7 +92,8 @@ namespace mystl
 		typedef __list_iterator<T, T&, T*>	iterator;
 		typedef __list_iterator<T, const T&, const T*>	const_iterator;
 		typedef T			value_type;
-		typedef value_type	reference;
+		typedef value_type&	reference;
+		typedef const value_type& const_reference;
 		typedef size_t		size_type;
 
 	protected:

@@ -10,6 +10,12 @@ namespace mystl
         typedef Result result_type;
     };
     
+    template <class Arg, class Result>
+    struct unary_function
+    {
+        typedef Arg argument_type;
+        typedef Result result_type;
+    };
 
     template <class T>
     struct less : public binary_function<T, T, bool>

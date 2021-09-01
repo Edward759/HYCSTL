@@ -1,4 +1,5 @@
 #pragma once
+#include "crtdefs.h"
 
 namespace mystl
 {
@@ -11,7 +12,7 @@ namespace mystl
 	template <
 		class Category,
 		class T,
-		class Distance = ptrdiff_t,
+		class Distance = std::ptrdiff_t,
 		class Pointer = T*, class Reference = T&>
 		struct iterator
 	{
@@ -37,7 +38,7 @@ namespace mystl
 	{
 		typedef random_access_iterator_tag	iterator_category;
 		typedef T							value_type;
-		typedef ptrdiff_t					difference_type;
+		typedef std::ptrdiff_t					difference_type;
 		typedef T*							pointer;
 		typedef T&							reference;
 	};
@@ -47,7 +48,7 @@ namespace mystl
 	{
 		typedef random_access_iterator_tag	iterator_category;
 		typedef T							value_type;
-		typedef ptrdiff_t					difference_type;
+		typedef std::ptrdiff_t					difference_type;
 		typedef const T*						pointer;
 		typedef const T&						reference;
 	};
@@ -145,4 +146,40 @@ namespace mystl
 	{
 		__advance(i, n, iterator_category(i));
 	}
+
+	template <class Iterator>
+	class reverse_iterator 
+	{
+	protected:
+	Iterator current;
+	public:
+	typedef typename iterator_traits<Iterator>::iterator_category
+			iterator_category;
+	typedef typename iterator_traits<Iterator>::value_type
+			value_type;
+	typedef typename iterator_traits<Iterator>::difference_type
+			difference_type;
+	typedef typename iterator_traits<Iterator>::pointer
+			pointer;
+	typedef typename iterator_traits<Iterator>::reference
+			reference;
+
+	typedef Iterator iterator_type;
+	typedef reverse_iterator<Iterator> self;
+
+	public:
+	reverse_iterator() {}
+	explicit reverse_iterator(iterator_type x) : current(x) {}
+
+	reverse_iterator(const self& x) : current(x.current) {}
+
+	template <class Iter>
+	reverse_iterator(const reverse_iterator<Iter>& x) : current(x.current) {}
+		
+	iterator_type base() const { return current; }
+	reference operator*() const {
+		Iterator tmp = current;
+		return *--tmp;
+	}
+	};
 }

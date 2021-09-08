@@ -99,9 +99,9 @@ namespace mystl
 
 	typedef __malloc_alloc_template<0> malloc_alloc;
 
-	enum {__ALLGN = 8};	//Ð¡ÐÍÇø¿éµÄÉÏµ÷±ß½ç
-	enum {__MAX_BYTES = 128};	//Ð¡ÐÍÇø¿éµÄÉÏÏÞ
-	enum {__NFREELISTS = __MAX_BYTES / __ALLGN};		//free-lists¸öÊý
+	enum {__ALLGN = 8};	//Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ß½ï¿½
+	enum {__MAX_BYTES = 128};	//Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	enum {__NFREELISTS = __MAX_BYTES / __ALLGN};		//free-listsï¿½ï¿½ï¿½ï¿½
 
 	union obj
 	{
@@ -113,16 +113,16 @@ namespace mystl
 	class __default_alloc_template
 	{
 	private:
-		//½«bytesÉÏµ÷ÖÁ8µÄ±¶Êý
+		//ï¿½ï¿½bytesï¿½Ïµï¿½ï¿½ï¿½8ï¿½Ä±ï¿½ï¿½ï¿½
 		static size_t ROUND_UP(size_t bytes)
 		{
 			return ((bytes + __ALLGN - 1) & ~(__ALLGN - 1));
 		}
 
 	private:
-		//16¸öfree-lists
+		//16ï¿½ï¿½free-lists
 		static obj* volatile free_list[__NFREELISTS];
-		//¾ö¶¨Ê¹ÓÃÄÄÒ»¸öfree-list
+		//ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½free-list
 		static size_t FREELIST_INDEX(size_t bytes)
 		{
 			return ((bytes + __ALLGN - 1) / __ALLGN - 1);
@@ -241,14 +241,14 @@ namespace mystl
 
 		if (bytes_left >= total_bytes)
 		{
-			//ÄÚ´æ³ØÊ£Óà¿Õ¼ä×ã¹»
+			//ï¿½Ú´ï¿½ï¿½Ê£ï¿½ï¿½Õ¼ï¿½ï¿½ã¹»
 			result = start_free;
 			start_free += total_bytes;
 			return result;
 		}
 		else if (bytes_left >= size)
 		{
-			//ÄÚ´æ³ØÊ£Óà¿Õ¼ä²»×ã£¬µ«ÄÜÌá¹©ÖÁÉÙÒ»¸öÇø¿é
+			//ï¿½Ú´ï¿½ï¿½Ê£ï¿½ï¿½Õ¼ä²»ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			nobjs = bytes_left / size;
 			total_bytes = nobjs*size;
 			result = start_free;
@@ -257,13 +257,13 @@ namespace mystl
 		}
 		else
 		{
-			//Ò»¸öÇø¿é¶¼Ìá¹©²»ÁË
+			//Ò»ï¿½ï¿½ï¿½ï¿½ï¿½é¶¼ï¿½á¹©ï¿½ï¿½ï¿½ï¿½
 			size_t bytes_to_get = total_bytes * 2 + ROUND_UP(heap_size >> 4);
 
 			
 			if (bytes_left > 0)
 			{
-				//½«ÁãÍ·Åä¸øÊÊµ±µÄfree_list
+				//ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½free_list
 				obj* volatile *my_free_list = free_list + FREELIST_INDEX(bytes_left);
 				((obj*)start_free)->free_list_link = *my_free_list;
 				*my_free_list = (obj*)start_free;
@@ -321,4 +321,4 @@ namespace mystl
 }
 
 typedef mystl::__default_alloc_template<0, 0> malloc_alloc;
-typedef malloc_alloc alloc;
+typedef mystl::malloc_alloc alloc;

@@ -51,6 +51,7 @@ namespace mystl
 		}
 		bool empty()const { return begin() == end(); }
 		reference operator[](size_type n) { return *(begin() + n); }
+		const_reference operator[](size_type n) const { return *(begin() + n); }
 
 		vector():start(0),finish(0),end_of_storage(0){}
 		vector(size_type n, const T& value) { fill_initialize(n, value); }
@@ -71,6 +72,8 @@ namespace mystl
 			destroy(start, finish);
 			deallocate();
 		}
+
+		vector<T, Alloc>& operator=(const vector<T, Alloc>& x);
 		reference front() { return *begin(); }
   const_reference front() const { return *begin(); }
 		reference back() { return *(end() - 1); }
@@ -118,6 +121,24 @@ namespace mystl
 		}
 		void clear() { erase(begin(), end()); }
 		void insert(iterator position, size_type n, const T& x);
+
+		void reserve(size_type n) {
+			if (capacity() < n) {
+				const size_type old_size = size();
+				iterator tmp = allocate_and_copy(n, start, finish);
+				destroy(start, finish);
+				deallocate();
+				start = tmp;
+				finish = tmp + old_size;
+				end_of_storage = start + n;
+			}
+		}
+
+		void swap(vector<T, Alloc>& x) {
+			mystl::swap(start, x.start);
+			mystl::swap(finish, x.finish);
+			mystl::swap(end_of_storage, x.end_of_storage);
+		}
 
 	protected:
 		iterator allocate_and_fill(size_type n, const T& x)
@@ -237,5 +258,29 @@ namespace mystl
 				end_of_storage = new_start + len;
 			}
 		}
+	}
+
+	template <class T, class Alloc>
+	vector<T, Alloc>& vector<T, Alloc>::operator=(const vector<T, Alloc>& x) {
+		if (&x != this) {
+			if (x.size() > capacity()) {
+				iterator tmp = allocate_and_copy(x.end() - x.begin(),
+					x.begin(), x.end());
+				destroy(start, finish);
+				deallocate();
+				start = tmp;
+				end_of_storage = start + (x.end() - x.begin());
+			}
+			else if (size() >= x.size()) {
+				iterator i = copy(x.begin(), x.end(), begin());
+				destroy(i, finish);
+			}
+			else {
+				copy(x.begin(), x.begin() + size(), start);
+				uninitialized_copy(x.begin() + size(), x.end(), finish);
+			}
+			finish = start + x.size();
+		}
+		return *this;
 	}
 }

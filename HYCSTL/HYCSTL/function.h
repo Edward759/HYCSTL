@@ -42,4 +42,16 @@ namespace mystl
 	struct equal_to : public binary_function<T, T, bool> {
 		bool operator()(const T& x, const T& y) const { return x == y; }
 	};
+
+	template <class T>
+	struct minus :public binary_function<T, T, T>
+	{
+		T operator()(const T&x, const T&y)const { return x - y; }
+	};
+
+	template <class T>
+	struct plus :public binary_function<T, T, T>
+	{
+		T operator()(const T&x, const T&y)const { return x + y; }
+	};
 }; // namespace mystl

@@ -134,10 +134,6 @@ namespace mystl
 										BidirectionalIterator2>()(first, last, result);
 	}
 
-	
-
-	
-
 	template <class T>
 	struct __copy_backward_dispatch<T*, T*>
 	{
@@ -190,5 +186,118 @@ namespace mystl
 		T tmp = a;
 		a = b;
 		b = tmp;
+	}
+
+	template <class InputIterator1, class InputIterator2>
+	inline bool equal(InputIterator1 first1, InputIterator1 last1,
+		InputIterator2 first2) {
+		for (; first1 != last1; ++first1, ++first2)
+			if (*first1 != *first2)
+				return false;
+		return true;
+	}
+
+	template <class InputIterator1, class InputIterator2, class BinaryPredicate>
+	inline bool equal(InputIterator1 first1, InputIterator1 last1,
+		InputIterator2 first2, BinaryPredicate binary_pred) {
+		for (; first1 != last1; ++first1, ++first2)
+			if (!binary_pred(*first1, *first2))
+				return false;
+		return true;
+	}
+
+	template <class ForwardIterator1, class ForwardIterator2, class T>
+	inline void __iter_swap(ForwardIterator1 a, ForwardIterator2 b, T*) {
+		T tmp = *a;
+		*a = *b;
+		*b = tmp;
+	}
+
+	template <class ForwardIterator1, class ForwardIterator2>
+	inline void iter_swap(ForwardIterator1 a, ForwardIterator2 b) {
+		__iter_swap(a, b, value_type(a));
+	}
+
+	template <class T>
+	inline void swap(T& a, T& b) {
+		T tmp = a;
+		a = b;
+		b = tmp;
+	}
+
+	template <class InputIterator1, class InputIterator2>
+	bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
+		InputIterator2 first2, InputIterator2 last2) {
+		for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
+			if (*first1 < *first2)
+				return true;
+			if (*first2 < *first1)
+				return false;
+		}
+		return first1 == last1 && first2 != last2;
+	}
+
+	template <class InputIterator1, class InputIterator2, class Compare>
+	bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
+		InputIterator2 first2, InputIterator2 last2,
+		Compare comp) {
+		for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
+			if (comp(*first1, *first2))
+				return true;
+			if (comp(*first2, *first1))
+				return false;
+		}
+		return first1 == last1 && first2 != last2;
+	}
+
+	inline bool
+		lexicographical_compare(const unsigned char* first1,
+			const unsigned char* last1,
+			const unsigned char* first2,
+			const unsigned char* last2)
+	{
+		const size_t len1 = last1 - first1;
+		const size_t len2 = last2 - first2;
+		const int result = memcmp(first1, first2, min(len1, len2));
+		return result != 0 ? result < 0 : len1 < len2;
+	}
+
+	inline bool lexicographical_compare(const char* first1, const char* last1,
+		const char* first2, const char* last2)
+	{
+#if CHAR_MAX == SCHAR_MAX
+		return lexicographical_compare((const signed char*)first1,
+			(const signed char*)last1,
+			(const signed char*)first2,
+			(const signed char*)last2);
+#else
+		return lexicographical_compare((const unsigned char*)first1,
+			(const unsigned char*)last1,
+			(const unsigned char*)first2,
+			(const unsigned char*)last2);
+#endif
+	}
+
+	template <class InputIterator1, class InputIterator2>
+	pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
+		InputIterator1 last1,
+		InputIterator2 first2) {
+		while (first1 != last1 && *first1 == *first2) {
+			++first1;
+			++first2;
+		}
+		return pair<InputIterator1, InputIterator2>(first1, first2);
+	}
+
+	template <class InputIterator1, class InputIterator2, class BinaryPredicate>
+	pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
+		InputIterator1 last1,
+		InputIterator2 first2,
+		BinaryPredicate binary_pred) {
+		while (first1 != last1 && binary_pred(*first1, *first2)) {
+			++first1;
+			++first2;
+		}
+		return pair<InputIterator1, InputIterator2>(first1, first2);
 	}
 }
